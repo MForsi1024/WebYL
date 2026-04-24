@@ -39,7 +39,7 @@ def handle_dialog(res, req):
             "waiting_for_word": False
         }
         # Заполняем текст ответа
-        res['response']['text'] = 'Привет! Я умею переводить сленговые слова. Что-то интересует?'
+        res['response']['text'] = 'Привет! Я умею переводить сленговые слова. Хочешь что-то узнать?'
         res['response']['buttons'] = sessionStorage[user_id]["suggests"]
         return
     if sessionStorage[user_id]["waiting_for_word"]:
