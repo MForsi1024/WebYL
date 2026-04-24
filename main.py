@@ -34,7 +34,8 @@ def handle_dialog(res, req):
         # Запишем подсказки, которые мы ему покажем в первый раз
 
         sessionStorage[user_id] = {
-            'suggests': [{'title': 'да', 'hide': True}, {'title': 'нет', 'hide': True}, {'title': 'справка', 'hide': True}],
+            'suggests': [{'title': 'да', 'hide': True}, {'title': 'нет', 'hide': True},
+                         {'title': 'справка', 'hide': True}],
             "waiting_for_word": False
         }
         # Заполняем текст ответа
@@ -43,12 +44,12 @@ def handle_dialog(res, req):
         return
     if sessionStorage[user_id]["waiting_for_word"]:
         znacheniye(req['request']['original_utterance'])
-        res['response']['text'] = f'{req['request']['original_utterance']}'
+        res['response']['text'] = f'{req['request']['original_utterance']}. Следующее слово?'
         return
 
     elif "да" in req['request']['original_utterance']:
         sessionStorage[user_id]["waiting_for_word"] = True
-        res['response']['text'] = 'Хорошо, приступим! Какое слово тебе объяснить? Напиши просто это слово.'
+        res['response']['text'] = 'Хорошо, приступим! Какое слово тебе объяснить? Напиши интересующее тебя слово.'
         return
 
     elif "нет" in req['request']['original_utterance']:
@@ -56,8 +57,15 @@ def handle_dialog(res, req):
         res['response']['end_session'] = True
         return
 
+    elif "справка" in req['request']['original_utterance']:
+        res['response'][
+            'text'] = 'Я могу объснить тебе значение современных сленговых слов. После того, как ты ты ответил "да" на мой вопрос, ты по одному отправляешь мне слова, значения которых тебя интересуют. К каждому слову я тебе буду делать описание. Начинаем?'
+        res['response']['buttons'] = sessionStorage[user_id]["suggests"]
+        return
+
     else:
         res['response']['text'] = 'Не поняла. Повтори пожалуйста.'
+        res['response']['buttons'] = sessionStorage[user_id]["suggests"]
         return
 
 
