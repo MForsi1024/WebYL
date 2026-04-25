@@ -4,6 +4,9 @@ import os
 from google.genai import types
 
 def get_response(req : str = '', temperature : float = 0.2, tokens : int = 500):
+    # Загружаем переменные из файла .env в окружение
+    load_dotenv()
+    client = genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
     try:
         my_config = types.GenerateContentConfig(
             temperature=temperature,
@@ -19,12 +22,10 @@ def get_response(req : str = '', temperature : float = 0.2, tokens : int = 500):
         )
         return response.text
     except Exception as e:
+        print(e)
         print("Пожалуйста, используйте валидный API. Сайт в env лежит, если что")
         return None
 
 
 if __name__ == '__main__':
-    # Загружаем переменные из файла .env в окружение
-    load_dotenv()
-    client = genai.Client(api_key=os.getenv('GEMINI_API_KEY'))
-    print(get_response())
+    pass
