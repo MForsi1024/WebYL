@@ -1,14 +1,11 @@
 from flask import Flask, request, jsonify
 import logging
-import json
-import random
 
 app = Flask(__name__)
 
 logging.basicConfig(level=logging.INFO)
 
 sessionStorage = {}
-
 
 @app.route('/post', methods=['POST'])
 def main():
@@ -27,49 +24,51 @@ def main():
 
 def handle_dialog(res, req):
     user_id = req['session']['user_id']
-
+    req_text = req['request']['original_utterance'].lower()
     if req['session']['new']:
         # Это новый пользователь.
         # Инициализируем сессию и поприветствуем его.
         # Запишем подсказки, которые мы ему покажем в первый раз
 
         sessionStorage[user_id] = {
-            'suggests': [{'title': 'да', 'hide': True}, {'title': 'нет', 'hide': True},
-                         {'title': 'справка', 'hide': True}],
+            'suggests': [{'title': 'Да', 'hide': True}, {'title': 'Нет', 'hide': True},
+                         {'title': 'Справка', 'hide': True}],
             "waiting_for_word": False
         }
         # Заполняем текст ответа
-        res['response']['text'] = 'Привет! Я умею переводить сленговые слова. Хочешь что-то узнать?'
+        res['response']['text'] = 'Привет! Я умею переводить сленговые слова на понятный язык. Хочешь что-то перевести?'
         res['response']['buttons'] = sessionStorage[user_id]["suggests"]
         return
     if sessionStorage[user_id]["waiting_for_word"]:
-        znacheniye(req['request']['original_utterance'])
+        get_meaning(req['request']['original_utterance'])
         res['response']['text'] = f'{req['request']['original_utterance']}. Следующее слово?'
         return
 
-    elif "да" in req['request']['original_utterance']:
+    elif "да" in req_text:
         sessionStorage[user_id]["waiting_for_word"] = True
         res['response']['text'] = 'Хорошо, приступим! Какое слово тебе объяснить? Напиши интересующее тебя слово.'
         return
 
-    elif "нет" in req['request']['original_utterance']:
+    elif "нет" in req_text:
         res['response']['text'] = 'Ну, как знаешь. Пока!'
         res['response']['end_session'] = True
         return
 
-    elif "справка" in req['request']['original_utterance']:
-        res['response'][
-            'text'] = 'Я могу объснить тебе значение современных сленговых слов. После того, как ты ты ответил "да" на мой вопрос, ты по одному отправляешь мне слова, значения которых тебя интересуют. К каждому слову я тебе буду делать описание. Начинаем?'
+    elif "справка" in req_text or "помощь" in req_text:
+        res['response']['text'] = ('Я могу объяснить тебе значение современных сленговых слов.'
+                                   ' После того, как ты ответишь "Да" на мой вопрос, ты по одному отправляешь мне слова,'
+                                   ' значения которых тебя интересуют. К каждому слову я тебе буду делать описание.'
+                                   ' Начнём?')
         res['response']['buttons'] = sessionStorage[user_id]["suggests"]
         return
 
     else:
-        res['response']['text'] = 'Не поняла. Повтори пожалуйста.'
+        res['response']['text'] = 'К сожалению я не понимаю тебя, пожалуйста скажи "Да", "Нет" или "Справка".'
         res['response']['buttons'] = sessionStorage[user_id]["suggests"]
         return
 
 
-def znacheniye(word):
+def get_meaning(word):
     print(word)
 
 
