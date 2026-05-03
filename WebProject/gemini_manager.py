@@ -25,7 +25,3 @@ def get_response(req : str = '', temperature : float = 0.2, tokens : int = 500):
         print(e)
         print("Пожалуйста, используйте валидный API. Сайт в env лежит, если что")
         return None
-
-
-if __name__ == '__main__':
-    pass
