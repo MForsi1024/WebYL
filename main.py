@@ -1,12 +1,13 @@
 from flask import Flask, request, jsonify
 import logging
-
+import orm
 app = Flask(__name__)
 
 logging.basicConfig(level=logging.INFO)
 
 sessionStorage = {}
 
+URL = 'http://127.0.0.1:6767'
 @app.route('/post', methods=['POST'])
 def main():
     logging.info(f'Request: {request.json!r}')
@@ -40,8 +41,8 @@ def handle_dialog(res, req):
         res['response']['buttons'] = sessionStorage[user_id]["suggests"]
         return
     if sessionStorage[user_id]["waiting_for_word"]:
-        get_meaning(req['request']['original_utterance'])
-        res['response']['text'] = f'{req['request']['original_utterance']}. Следующее слово?'
+        meaning = get_meaning(req['request']['original_utterance'])
+        res['response']['text'] = f'{meaning}. Следующее слово?'
         return
 
     elif "да" in req_text:
@@ -69,7 +70,7 @@ def handle_dialog(res, req):
 
 
 def get_meaning(word):
-    print(word)
+    return orm.get_response(word, URL)
 
 
 if __name__ == '__main__':
