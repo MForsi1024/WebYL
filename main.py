@@ -37,8 +37,14 @@ def handle_dialog(res, req):
             "waiting_for_word": False
         }
         # Заполняем текст ответа
-        res['response']['text'] = 'Привет! Я умею переводить сленговые слова на понятный язык. Хочешь что-то перевести?'
+        res['response']['text'] = 'Привет!'
         res['response']['buttons'] = sessionStorage[user_id]["suggests"]
+        res['response']['card'] = {
+            'type': 'BigImage',
+            'image_id': '1030494/d5c0fc62190df2ce0c9d',
+            'title': 'Привет!',
+            'description': 'Я умею переводить сленговые слова на понятный язык. Хочешь что-то перевести?'
+        }
         return
     if sessionStorage[user_id]["waiting_for_word"]:
         meaning = get_meaning(req['request']['original_utterance'])
@@ -61,6 +67,15 @@ def handle_dialog(res, req):
                                    ' значения которых тебя интересуют. К каждому слову я тебе буду делать описание.'
                                    ' Начнём?')
         res['response']['buttons'] = sessionStorage[user_id]["suggests"]
+        res['response']['card'] = {
+            'type': 'BigImage',
+            'image_id': '13200873/b046eadeb9653b25600a',
+            'title': 'Помощь!',
+            'description': 'Я могу объяснить тебе значение современных сленговых слов.'
+                                   ' После того, как ты ответишь "Да" на мой вопрос, ты по одному отправляешь мне слова,'
+                                   ' значения которых тебя интересуют. К каждому слову я тебе буду делать описание.'
+                                   ' Начнём?'
+        }
         return
 
     else:
