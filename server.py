@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify
 import sqlite3
 import gemini_manager
+
 app = Flask(__name__)
+
 
 @app.route('/get', methods=['GET'])
 def get_test():
@@ -11,13 +13,18 @@ def get_test():
     cursor.execute("SELECT * FROM Fignya_Melkaya where word = ?", (word,))
     all_rows = cursor.fetchall()
     if all_rows:
+        cursor.execute("UPDATE Fignya_Melkaya SET count = count + 1 WHERE word = ?", (word,))
+        connection.commit()
+        connection.close()
         return jsonify({'word': all_rows[0][2]})
     else:
         gemini_response = gemini_manager.get_response(word)
         print(gemini_response, word)
         if gemini_response != "no":
-            cursor.execute("INSERT INTO Fignya_Melkaya (word, meaning) VALUES (?, ?)", (word, gemini_response[4:]))
+            cursor.execute("INSERT INTO Fignya_Melkaya (word, meaning, count) VALUES (?, ?, ?)",
+                           (word, gemini_response[4:], 1))
         connection.commit()
+        connection.close()
         return gemini_response[4:]
 
 
