@@ -10,7 +10,7 @@ def get_test():
     connection = sqlite3.connect('Data.db')
     cursor = connection.cursor()
     word = request.args.get('word')
-    cursor.execute("SELECT id, word, meaning FROM Fignya_Melkaya where word = ?", (word,))
+    cursor.execute("SELECT id, word, meaning FROM Data where word = ?", (word,))
     all_rows = cursor.fetchall()
     if all_rows:
         cursor.execute("UPDATE Data SET count = count + 1 WHERE word = ?", (word,))
@@ -26,11 +26,11 @@ def get_test():
                            (word, gemini_response[4:], 1))
             connection.commit()
             connection.close()
-            return jsonify({gemini_response[4:]})
+            return jsonify({'word': gemini_response[4:]})
 
         connection.commit()
         connection.close()
-        return jsonify({'word': "К сожалению я на такое не отвечу. Давай другое слово попробуем."})
+        return jsonify({'word': "К сожалению я на такое не отвечу. Давай другое слово попробуем"})
 
 
 if __name__ == '__main__':
