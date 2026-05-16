@@ -13,7 +13,7 @@ def get_test():
     cursor.execute("SELECT id, word, meaning FROM Fignya_Melkaya where word = ?", (word,))
     all_rows = cursor.fetchall()
     if all_rows:
-        cursor.execute("UPDATE Fignya_Melkaya SET count = count + 1 WHERE word = ?", (word,))
+        cursor.execute("UPDATE Data SET count = count + 1 WHERE word = ?", (word,))
         connection.commit()
         connection.close()
         print(all_rows)
@@ -22,7 +22,7 @@ def get_test():
         gemini_response = gemini_manager.get_response(word)
         print(gemini_response, word)
         if gemini_response != "no" or not gemini_response:
-            cursor.execute("INSERT INTO Fignya_Melkaya (word, meaning, count) VALUES (?, ?, ?)",
+            cursor.execute("INSERT INTO Data (word, meaning, count) VALUES (?, ?, ?)",
                            (word, gemini_response[4:], 1))
             connection.commit()
             connection.close()
